@@ -112,3 +112,14 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# === Claves y secretos (NUNCA subir) ===
+.env
+secrets.json
+ApiKeys*.cs
+*.keystore
+*.jks
+
+# === Editores (opcional) ===
+.vscode/
+.idea/
