@@ -123,3 +123,5 @@ ApiKeys*.cs
 # === Editores (opcional) ===
 .vscode/
 .idea/
+
+*_BackUpThisFolder_ButDontShipItWithYourGame/
