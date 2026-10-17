@@ -1,0 +1,7 @@
+{
+	"API_KEY": "",
+	"model": "gemini-1.5-flash",
+	"temperature": 0.3,
+	"maxOutputTokens": 300,
+	"timeoutSeg": 15
+}

@@ -125,3 +125,8 @@ ApiKeys*.cs
 .idea/
 
 *_BackUpThisFolder_ButDontShipItWithYourGame/
+Assets\Resources\api_config.json
+
+#excluir
+api_config.json
+
