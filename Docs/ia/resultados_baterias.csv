@@ -1,0 +1,2 @@
+id,fecha,version_prompt,categoria,estructura_activa,pregunta,respuesta,latencia_ms,tokens_entrada,tokens_salida,dentro_de_dominio,correcta_tecnicamente,longitud_adecuada,observaciones 
+BC-01,2026-10-23,v1.0,Conceptual,PILA,"¿Qué es una pila y cuál es su principio de funcionamiento?",...,420,38,45,Sí,Sí,Sí,Respuesta rápida y clara.
