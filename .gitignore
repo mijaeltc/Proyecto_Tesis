@@ -129,4 +129,4 @@ Assets\Resources\api_config.json
 
 #excluir
 api_config.json
-
+Assets/Resources/api_config.json*
