@@ -97,13 +97,12 @@ namespace IA
                 preguntaProcesada = preguntaProcesada.Substring(0, 200); 
             }
 
-            // 4. Reiniciar historial al cambiar de marcador/estructura 
-            string estructuraNormalizada = string.IsNullOrEmpty(estructuraActiva) ? "ninguna" : estructuraActiva.ToLower().Trim(); 
-            if (estructuraNormalizada != ultimaEstructuraActiva) 
-            { historialMensajes.Clear(); 
-            ultimaEstructuraActiva = estructuraNormalizada; 
-            Debug.Log($"[AsistenteIAClient] Cambio de estructura a '{estructuraNormalizada}'. Historial reiniciado."); 
-            }
+            // 4. Priorizar la estructura detectada por Vuforia si no se especifica una nueva
+            string estructuraNormalizada = string.IsNullOrEmpty(estructuraActiva) 
+                ? (string.IsNullOrEmpty(ultimaEstructuraActiva) ? "ninguna" : ultimaEstructuraActiva) 
+                : estructuraActiva.ToLower().Trim();
+
+            CambiarEstructura(estructuraNormalizada);
 
             // 5. Iniciar la corrutina asíncrona 
             StartCoroutine(EnviarConsultaCoroutine(preguntaProcesada, estructuraNormalizada, onRespuesta, onError));
@@ -255,6 +254,22 @@ namespace IA
                 }
             }
             ocupado = false;
+        }
+
+        /// <summary>
+        /// Cambia el contexto de la estructura activa y reinicia el historial conversacional.
+        /// Diseñado para ser invocado por eventos de Unity y Vuforia (On Target Found).
+        /// </summary>
+        public void CambiarEstructura(string nuevaEstructura)
+        {
+            string estructuraNormalizada = string.IsNullOrEmpty(nuevaEstructura) ? "ninguna" : nuevaEstructura.ToLower().Trim();
+            
+            if (estructuraNormalizada != ultimaEstructuraActiva)
+            {
+                historialMensajes.Clear();
+                ultimaEstructuraActiva = estructuraNormalizada;
+                Debug.Log($"[AsistenteIAClient] Cambio de estructura a '{estructuraNormalizada}'. Historial reiniciado.");
+            }
         }
 
         /// <summary>

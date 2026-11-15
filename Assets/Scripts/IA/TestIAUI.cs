@@ -6,11 +6,24 @@ using IA;
 namespace IA
 {
     /// <summary> 
-    /// Controlador de UI para la escena de pruebas Test_IA.unity. 
-    /// Registra la latencia automáticamente en la Consola de Unity sin alterar el texto visual de la respuesta.
+    /// Controlador de UI para el Asistente IA. 
+    /// Controla la apertura del chat, la animación de la burbuja flotante y registra métricas.
     /// </summary>
     public class TestIAUI: MonoBehaviour
     {
+        [Header("Contenedor Principal")]
+        [SerializeField] private GameObject panelChat;
+
+        [Header("Burbuja Flotante (Toggle)")]
+        [Tooltip("RectTransform del botón circular Boton_ToggleChat")]
+        [SerializeField] private RectTransform rectBotonToggle;
+        [Tooltip("Texto hijo 'IA' dentro del botón")]
+        [SerializeField] private TextMeshProUGUI textBotonToggle;
+        [Tooltip("Pos X cuando el chat está cerrado (pegado al borde derecho)")]
+        [SerializeField] private float posXNormal = -15f;
+        [Tooltip("Pos X cuando el chat está abierto (oculta más de la mitad fuera de pantalla)")]
+        [SerializeField] private float posXChatAbierto = 65f;
+        
         [Header("Referencias del cliente IA")]
         [SerializeField] private AsistenteIAClient clienteIA;
 
@@ -21,7 +34,6 @@ namespace IA
         [SerializeField] private TextMeshProUGUI textRespuesta;
 
         [Header("Opciones de UX")]
-        [Tooltip("Si se activa, borra el campo de texto después de enviar una consulta exitosa.")]
         [SerializeField] private bool limpiarInputAlEnviar = false;
 
         private void Start() {
@@ -32,7 +44,44 @@ namespace IA
 
             if(textRespuesta != null)
             {
-                textRespuesta.text = "Escribe una pregunta y presiona 'Enviar' para probar la API y registrar métricas.";
+                textRespuesta.text = "Escribe una pregunta y presiona 'Enviar' para consultar al tutor.";
+            }
+
+            // Sincronizar la posición inicial de la burbuja según si el panel arranca oculto o no
+            if (panelChat != null)
+            {
+                ActualizarEstadoBurbuja(panelChat.activeSelf);
+            }
+        }
+
+        /// <summary>
+        /// Alterna la visibilidad del chat y desplaza la esfera al borde de la pantalla.
+        /// </summary>
+
+        public void AlternarPanelChat()
+        {
+            if (panelChat != null)
+            {
+                bool nuevoEstado = !panelChat.activeSelf;
+                panelChat.SetActive(nuevoEstado);
+                ActualizarEstadoBurbuja(nuevoEstado);
+            }
+        }
+
+        private void ActualizarEstadoBurbuja(bool chatAbierto)
+        {
+            if (rectBotonToggle != null)
+            {
+                Vector2 pos = rectBotonToggle.anchoredPosition;
+                pos.x = chatAbierto ? posXChatAbierto : posXNormal;
+                rectBotonToggle.anchoredPosition = pos;
+            }
+
+            // Mover el texto 'IA' hacia la izquierda del semicírculo para que no quede cortado al ocultar la mitad
+            if (textBotonToggle != null)
+            {
+                RectTransform rectText = textBotonToggle.rectTransform;
+                rectText.anchoredPosition = new Vector2(chatAbierto ? -25f : 0f, 0f);
             }
         }
 
@@ -45,7 +94,10 @@ namespace IA
             }
 
             string pregunta = inputPregunta != null ? inputPregunta.text : string.Empty;
-            string estructura = dropdownEstructura != null ? dropdownEstructura.options[dropdownEstructura.value].text : "pila";
+
+            string estructura = (dropdownEstructura != null && dropdownEstructura.gameObject.activeInHierarchy)
+                ? dropdownEstructura.options[dropdownEstructura.value].text
+                : string.Empty;
 
             if (string.IsNullOrWhiteSpace(pregunta))
             {
@@ -57,7 +109,7 @@ namespace IA
 
             if(textRespuesta != null)
             {
-                textRespuesta.text = "<color=yellow>Procesando consulta con Gemini 3.5 Flash-Lite...</color>";
+                textRespuesta.text = "<color=yellow>Consultando al tutor virtual...</color>";
             }
 
             if(botonEnviar != null)
@@ -84,7 +136,7 @@ namespace IA
                     }
 
                     // Registrar el tiempo y datos métricos de la tesis exclusivamente en la Consola
-                    Debug.Log($"[METRICA TESIS] Latencia: {latenciaSegundos:F2}s | Estructura: {estructura} | Pregunta: \"{pregunta}\"");
+                    Debug.Log($"[METRICA TESIS] Latencia: {latenciaSegundos:F2}s | Pregunta: \"{pregunta}\"");
 
                     if (botonEnviar != null)
                     {
